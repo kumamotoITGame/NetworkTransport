@@ -15,6 +15,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 
+namespace NetworkTransport
+{
 public class PacketQueue
 {	
 	// パケット格納情報.
@@ -104,4 +106,4 @@ public class PacketQueue
 		m_streamBuffer.SetLength(0);
 	}
 }
-
+}
