@@ -1,6 +1,7 @@
 ﻿// ライブラリで使用する共通の定義
 //
-
+namespace NetworkTransport
+{
 using UnityEngine;
 using System.Collections;
 
@@ -25,4 +26,5 @@ public class NetEventState
 {
     public NetEventType     type;	// イベントタイプ.
     public NetEventResult   result;	// イベントの結果.
+}
 }
