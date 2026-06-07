@@ -51,7 +51,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-
+namespace NetworkTransport
+{
 
 #if UNITY_BUILD
 public class TransportUDP : MonoBehaviour
@@ -416,5 +417,7 @@ public class TransportUDP{
         System.Diagnostics.Debug.WriteLine(message);
 #endif
     }
+
+}
 
 }
