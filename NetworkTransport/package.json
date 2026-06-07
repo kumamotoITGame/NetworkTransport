@@ -1,7 +1,0 @@
-{
-  "name": "com.kumamotoitgame.networktransport",
-  "version": "1.0.0",
-  "displayName": "Network Transport Library",
-  "unity": "2023.2",
-  "description": "TCP/UDP networking library for Unity. Supports threaded socket communication and packet queue system."
-}
