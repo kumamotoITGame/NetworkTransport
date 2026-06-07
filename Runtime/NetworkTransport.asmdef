@@ -1,1 +1,4 @@
-
+{
+  "name": "NetworkTransport",
+  "autoReferenced": true
+}
