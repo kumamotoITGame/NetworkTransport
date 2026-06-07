@@ -51,6 +51,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
+namespace NetworkTransport
+{
+
 #if UNITY_BUILD
 public class TransportTCP : MonoBehaviour{
 #else
@@ -422,3 +425,4 @@ public class TransportTCP{
 
 }
 
+}
