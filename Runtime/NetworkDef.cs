@@ -2,9 +2,6 @@
 //
 using UnityEngine;
 using System.Collections;
-
-namespace NetworkTransport
-{
 	
 // イベントの種類.
 public enum NetEventType 
@@ -28,4 +25,4 @@ public class NetEventState
     public NetEventType     type;	// イベントタイプ.
     public NetEventResult   result;	// イベントの結果.
 }
-}
+
