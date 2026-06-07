@@ -1,8 +1,0 @@
-{
-  "name": "NetworkTransport",
-  "rootNamespace": "NetworkTransport",
-  "autoReferenced": true,
-  "references": [],
-  "includePlatforms": [],
-  "excludePlatforms": []
-}
