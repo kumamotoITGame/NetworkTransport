@@ -1,10 +1,11 @@
 ﻿// ライブラリで使用する共通の定義
 //
-namespace NetworkTransport
-{
 using UnityEngine;
 using System.Collections;
 
+namespace NetworkTransport
+{
+	
 // イベントの種類.
 public enum NetEventType 
 {
