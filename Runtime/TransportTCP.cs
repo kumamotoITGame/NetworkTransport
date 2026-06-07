@@ -1,7 +1,7 @@
-﻿// TCP通信を行う通信モジュール
+// UDP通信を行う通信モジュール
 //
 // ■プログラムの説明
-// TCPプロトコルを用いたデータの送受信を行うモジュールです.
+// UDPプロトコルを用いたデータの送受信を行うモジュールです.
 // データを受信するための動作をサーバーのように処理しています.
 // 通信相手のデータを受信するためのサーバー処理を実行して待ち受けを行います.
 // 通信相手が Connect() 関数を呼び出して接続したらお互いに送受信できる状態になります.
@@ -42,10 +42,10 @@
 #define UNITY_BUILD
 #endif
 
+
 #if UNITY_BUILD
 using UnityEngine;
 #endif
-using System;
 using System.Collections;
 using System.Net;
 using System.Net.Sockets;
@@ -55,20 +55,18 @@ namespace NetworkTransport
 {
 
 #if UNITY_BUILD
-public class TransportTCP : MonoBehaviour{
+public class TransportUDP : MonoBehaviour
+{
 #else
-public class TransportTCP{
+public class TransportUDP{
 #endif
 
     //
-    // ソケット接続関連.
+    // ソケットによる送受信関連変数.
     //
 
-    // リスニングソケット.
-    private Socket			m_listener = null;
-
-	// クライアントとの接続用ソケット.
-	private Socket			m_socket = null;
+    // クライアントとの送受信用ソケット.
+    private Socket			m_socket = null;
 
 	// 送信バッファ.
 	private PacketQueue		m_sendQueue;
@@ -115,7 +113,7 @@ public class TransportTCP{
         m_recvQueue = new PacketQueue();	
 	}
 #else
-	public TransportTCP()
+	public TransportUDP()
 	{
         // 送受信バッファを作成します.
         m_sendQueue = new PacketQueue();
@@ -126,19 +124,17 @@ public class TransportTCP{
     // 待ち受け開始.
     public bool StartServer(int port, int connectionNum)
 	{
-        PrintLog("StartServer called.!");// サーバが呼び出された
+        PrintLog("StartServer called.!");
 
-        // リスニングソケットを生成します.
+        // 送受信用ソケットを生成します.
         try {
 			// ソケットを生成します.
-			m_listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+			m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 			// 使用するポート番号を割り当てます.
-			m_listener.Bind(new IPEndPoint(IPAddress.Any, port));
-			// 待ち受けを開始します.
-			m_listener.Listen(connectionNum);
+			m_socket.Bind(new IPEndPoint(IPAddress.Any, port));
         }
         catch {
-            PrintLog("StartServer fail");
+			PrintLog("StartServer fail");
             return false;
         }
 
@@ -158,9 +154,9 @@ public class TransportTCP{
 
         Disconnect();
 
-        if (m_listener != null) {
-            m_listener.Close();
-            m_listener = null;
+		if (m_socket != null) {
+			m_socket.Close();
+			m_socket = null;
         }
 
         m_isServer = false;
@@ -172,48 +168,45 @@ public class TransportTCP{
     // 接続処理.
     public bool Connect(string address, int port)
     {
-        PrintLog("TransportTCP::Connect called.[Port:" + port + "]");// TransportTCP の Connect 関数が呼ばれた　つまりTCP通信で指定ポートへ接続しようとしている
+		PrintLog("TransportUdp::Connect called.[Port:" + port + "]");
 
-        if (m_listener != null) {
+		if (m_socket != null) {
             return false;
         }
 
 		bool ret = false;
         try {
-			// 接続する端末側のソケットを生成します.
-			// 接続する側はこのソケットを利用して送受信を行います.
-			m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            m_socket.NoDelay = true;
-#if UNITY_STANDALONE_WIN
-            m_socket.SendBufferSize = 0;
-#endif
+			m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
+			// ※UDPでも通信相手とConnect関数を呼び出して接続して通信することもできます.
+			//   接続して通信する場合は送信時にIPアドレスを指定しないSend関数を使用して送信することもできます.
+			//   ここではTransportTCPと同じ関数で動作させるためConnect関数を使用しています.
+			//   IPアドレスとポート番号をこのクラスで管理することでConnect関数を使用しないで通信することもできます.   
             m_socket.Connect(address, port);
 			ret = LaunchThread();
 		}
-		catch (SocketException e) 
-		{
-            PrintLog(e.Message);
+        catch {
             m_socket = null;
         }
 
 		if (ret == true) {
 			m_isConnected = true;
-            PrintLog("TransportTCP::Connect success.");// コネクト成功
+			PrintLog("TransportUdp::Connect success.");
 		}
 		else {
 			m_isConnected = false;
-            PrintLog("TransportTCP::Connect fail");
+			PrintLog("TransportUdp::Connect fail");
 		}
 
         if (m_handler != null) {
-			// 接続結果を通知します.
-			// ゲームアプリケーションは他のプレイヤーが入室したときにユーザーへ通知するのがよいでしょう.
-			// そのため入室したことをアプリケーションがわかるようにアプリケーション側の関数を呼び出すようにします.
+            // 接続結果を通知します.
+	        // ゲームアプリケーションは他のプレイヤーが入室したときにユーザーへ通知するのがよいでしょう.
+	        // そのため入室したことをアプリケーションがわかるようにアプリケーション側の関数を呼び出すようにします.
 			NetEventState state = new NetEventState();
 			state.type = NetEventType.Connect;
 			state.result = (m_isConnected == true) ? NetEventResult.Success : NetEventResult.Failure;
             m_handler(state);
-            PrintLog("event handler called");
+			PrintLog("event handler called");
         }
 
         return m_isConnected;
@@ -224,21 +217,21 @@ public class TransportTCP{
         m_isConnected = false;
 
         if (m_socket != null) {
-			// ソケットのクローズします.
+            // ソケットをクローズします.
 			try {
 	            m_socket.Shutdown(SocketShutdown.Both);
 	            m_socket.Close();
 	            m_socket = null;
 			}
 			catch (SocketException e) {
-                PrintLog(e.Message);
+				PrintLog(e.Message);
 			}
         }
 
-		// 切断を通知します.
-		// ゲームアプリケーションは他のプレイヤーが切断したときにユーザーに通知するのがよいでしょう.
-		// そのため切断したことをアプリケーションがわかるようにアプリケーション側の関数を呼び出すようにします.
-		if (m_handler != null) {
+        // 切断を通知します.
+        // ゲームアプリケーションは他のプレイヤーが切断したときにユーザーに通知するのがよいでしょう.
+        // そのため切断したことをアプリケーションがわかるようにアプリケーション側の関数を呼び出すようにします.
+        if (m_handler != null) {
 			NetEventState state = new NetEventState();
 			state.type = NetEventType.Disconnect;
 			state.result = NetEventResult.Success;
@@ -253,8 +246,9 @@ public class TransportTCP{
 			return 0;
 		}
 
-		// 実際の送信は通信スレッド側(DispatchSend関数)で行います.
-		// ゲームスレッド側の処理をできるだけ軽くするために直接Send関数で送信していません.
+		// 送信データは一旦キューにバッファリングするだけで送信はしていません.
+		// 実際の送信は通信スレッド側(DispatchSend() 関数)で行います.
+		// ゲームスレッド側の処理をできるだけ軽くするために直接 Send() 関数で送信していません.
 		return m_sendQueue.Enqueue(data, size);
     }
 
@@ -292,23 +286,23 @@ public class TransportTCP{
 			m_thread.Start();
 		}
 		catch {
-            PrintLog("Cannot launch thread.");
+			PrintLog("Cannot launch thread.");
 			return false;
 		}
 		
 		return true;
 	}
 
-	// スレッド側の送受信処理.
+	// 通信スレッド側の送受信処理.
     public void Dispatch()
 	{
-        PrintLog("Dispatch thread started.");//ディスパッチスレッド の開始
+		PrintLog("Dispatch thread started.");
 
-        while (m_threadLoop) {
+		while (m_threadLoop) {
 			// クライアントからの接続を待ちます.
 			AcceptClient();
 
-			// クライアントとの小受信を処理します.
+			// クライアントとの送受信を処理します.
 			if (m_socket != null && m_isConnected == true) {
 
 	            // 送信処理.
@@ -321,20 +315,21 @@ public class TransportTCP{
 			Thread.Sleep(5);
 		}
 
-        PrintLog("Dispatch thread ended.");
+		PrintLog("Dispatch thread ended.");
     }
 
-	// クライアントとの接続.
+	// 通信相手の待ち受け.
 	void AcceptClient()
 	{
-		if (m_listener != null && m_listener.Poll(0, SelectMode.SelectRead)) {
+		if (m_isConnected == false &&
+		    m_socket != null && 
+		    m_socket.Poll(0, SelectMode.SelectRead)) {
 			// クライアントから接続されました.
-			m_socket = m_listener.Accept();
 			m_isConnected = true;
 
 			// 接続を通知します.
-			// ゲームなどのアプリケーションは他のプレイヤーが入室したときにユーザーに通知するのがよいでしょう.
-			// そのため入室したことをアプリケーションがわかるようにアプリケーション側の関数を呼び出すようにします.
+	        // ゲームなどのアプリケーションは他のプレイヤーが入室したときにユーザーに通知するのがよいでしょう.
+	        // そのため入室したことをアプリケーションがわかるようにアプリケーション側の関数を呼び出すようにします.
 			if (m_handler != null) {
 				NetEventState state = new NetEventState();
 				state.type = NetEventType.Connect;
@@ -352,10 +347,10 @@ public class TransportTCP{
             if (m_socket.Poll(0, SelectMode.SelectWrite)) {
 				byte[] buffer = new byte[s_mtu];
 
-				// Send関数(上にある)でバッファリングされたデータを取り出して送信を行います.
-				int sendSize = m_sendQueue.Dequeue(ref buffer, buffer.Length);
-				// 送信データがなくなるまで送信を続けます.
-				while (sendSize > 0) {
+				// Send関数でバッファリングされたデータを取り出して送信を行います.
+                int sendSize = m_sendQueue.Dequeue(ref buffer, buffer.Length);
+                // 送信データがなくなるまで送信を続けます.
+                while (sendSize > 0) {
                     m_socket.Send(buffer, sendSize, SocketFlags.None);
                     sendSize = m_sendQueue.Dequeue(ref buffer, buffer.Length);
                 }
@@ -375,15 +370,15 @@ public class TransportTCP{
 				byte[] buffer = new byte[s_mtu];
 
                 int recvSize = m_socket.Receive(buffer, buffer.Length, SocketFlags.None);
-				// 通信相手と切断したことにReceive関数の関数値は0が返されます.
-				if (recvSize == 0) {
+                // 通信相手と切断したことにReceive関数の関数値は0が返されます.
+                if (recvSize == 0) {
                     // 切断.
                     PrintLog("Disconnect recv from client.");
                     Disconnect();
                 }
                 else if (recvSize > 0) {
-					// ゲームスレッド側に受信したデータを渡すために受信データをキューに追加します.
-					m_recvQueue.Enqueue(buffer, recvSize);
+                	// ゲームスレッド側に受信したデータを渡すために受信データをキューに追加します.
+                    m_recvQueue.Enqueue(buffer, recvSize);
                 }
             }
         }
@@ -392,7 +387,7 @@ public class TransportTCP{
         }
     }
 
-	// サーバーか確認.
+	// サーバー動作設定確認.
 	public bool IsServer() {
 		return m_isServer;
 	}
@@ -414,7 +409,7 @@ public class TransportTCP{
         }
 
 #if UNITY_BUILD
-        Debug.Log(message);
+        PrintLog(message);
 #elif NON_UNITY
         Console.WriteLine(message);
 #else
