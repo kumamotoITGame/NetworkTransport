@@ -1,6 +1,9 @@
 パッケージマネージャー使用path
 https://github.com/Ud128/NetworkLibrary.git?path=/Packages/com.ohara.networktransportlibrary
 
+Unityで自作したLibraryをGitで取得する<br>
+参考資料：https://zenn.dev/ganariya/articles/create-import-package-from-upm
+
 # NetworkTransport Library
 
 Unity向けの軽量TCP/UDP通信ライブラリです。  
