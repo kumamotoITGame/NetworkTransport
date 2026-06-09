@@ -1,0 +1,11 @@
+{
+    "name": "com.ohara.networktansportlibrary",
+    "displayName": "Network Tansport Library",
+    "version": "1.0.0",
+    "unity": "2022.2",
+    "description": "Unity Network library.",
+    "keywords": [],
+    "license": "",
+    "category": "",
+    "dependencies": {}
+}
