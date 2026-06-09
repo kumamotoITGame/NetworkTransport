@@ -20,11 +20,37 @@ Unity向けの軽量TCP/UDP通信ライブラリです。
 
 # ■ フォルダ構成
 
+手動でPackageのフォルダーを開き com.ohara.networktansportlibrary といった名前の新規フォルダを作ってください<br>
+ohara の部分は会社名などにしてください
+
+om.ohara.networktansportlibrary フォルダの中に package.json を主導で作ってください
+
+`package.json` は、このフォルダをUnity Package Manager（UPM）として認識させるための設定ファイルです。
+package.json の中身は下記のようにしてください
+
+```json
+{
+    "name": "com.ohara.networktansportlibrary",
+    "displayName": "Network Tansport Library",
+    "version": "1.0.0",
+    "unity": "2022.2",
+    "description": "Unity Network library.",
+    "keywords": [],
+    "license": "",
+    "category": "",
+    "dependencies": {}
+}
 ```
-NetworkTransport/
+上記のように作成後、Unityを立ち上げると下記のようなフォルダー攻勢になっているので<br>
+Unity上で Create＞Folder でフォルダを作成し Runtimeを作ってライブラリーとして必要なスクリプトを入れてください
+Unity上で AssemblyDefinition を作り データ名はcom.ohara.networktansportlibraryとしInspectorでNameのところを Network Tansport Library としてください
+下記のようなフォルダー構成にしてください
+
+```
+Packages/Network Tansport Library/
 ├ package.json
 ├ Runtime/
-  ├ NetworkTransport.asmdef
+  ├ com.ohara.networktansportlibrary.asmdef
   ├ NetworkDef.cs
   ├ PacketQueue.cs
   ├ TransportTCP.cs
@@ -33,60 +59,19 @@ NetworkTransport/
 
 ---
 
-# ■ package.json について（UPM定義）
-
-`package.json` は、このフォルダをUnity Package Manager（UPM）として認識させるための設定ファイルです。
-
-```json
-{
-  "name": "com.yourcompany.networktransport",
-  "version": "1.0.0",
-  "displayName": "Network Transport Library",
-  "unity": "2023.2",
-  "description": "TCP/UDP networking library for Unity projects"
-}
-```
-
-● 役割
+● AssemblyDefinition の役割
 
 - Unityに「これはパッケージです」と伝える
 - バージョン管理を行う
 - 他プロジェクトから再利用可能にする
 
-"name": "com.yourcompany.networktransport", ←ここはあなたの名前を書いてください
+"name": "com.ohara.networktansportlibrary"", ← ohara は会社名を書くところです
 
-例）"name": "com.ohara_penpen.networktransport",<br>
 例）"name": "com.capcom.networktransport",
-
-# ■ NetworkTransport.asmdef について
-
-```JSON
-{
-  "name": "NetworkTransport",
-  "rootNamespace": "NetworkTransport"
-}
-```
-
-● 役割
-
-- このフォルダのコードを1つのアセンブリ（DLL）としてまとめる
-- コンパイル単位を分離することでビルド時間を短縮
-- 依存関係を明確化する
-- 他プロジェクトへの移植性を向上させる
 
 # ■ 別プロジェクトでの使い方
 
-● Git URLで追加
-
-```JSON
-{
-  "dependencies": {
-    "com.yourcompany.networktransport": "https://github.com/yourname/NetworkTransport.git"
-  }
-}
-```
-
-//github.com/yourname/NetworkTransport.git" ←こはあなたのGitURL先を書く
+パッケージマネージャーで https://github.com/Ud128/NetworkLibrary.git?path=/Packages/com.ohara.networktansportlibrary を指定してaddする
 
 # ■ Unity上での利用方法
 
