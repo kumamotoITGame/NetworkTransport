@@ -1,3 +1,4 @@
+パッケージマネージャー使用path
 https://github.com/Ud128/NetworkLibrary.git?path=/Packages/com.ohara.networktransportlibrary
 
 # NetworkTransport Library
