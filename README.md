@@ -1,3 +1,5 @@
+https://github.com/Ud128/NetworkLibrary.git?path=/Packages/com.ohara.networktransportlibrary
+
 # NetworkTransport Library
 
 Unity向けの軽量TCP/UDP通信ライブラリです。  
