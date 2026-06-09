@@ -20,18 +20,18 @@ Unity向けの軽量TCP/UDP通信ライブラリです。
 
 # ■ フォルダ構成
 
-手動でPackageのフォルダーを開き com.ohara.networktansportlibrary といった名前の新規フォルダを作ってください<br>
+手動でPackageのフォルダーを開き com.ohara.networktransportlibrary といった名前の新規フォルダを作ってください<br>
 ohara の部分は会社名などにしてください
 
-om.ohara.networktansportlibrary フォルダの中に package.json を主導で作ってください
+com.ohara.networktransportlibrary フォルダの中に package.json を手動で作ってください
 
 `package.json` は、このフォルダをUnity Package Manager（UPM）として認識させるための設定ファイルです。
 package.json の中身は下記のようにしてください
 
 ```json
 {
-    "name": "com.ohara.networktansportlibrary",
-    "displayName": "Network Tansport Library",
+    "name": "com.ohara.networktransportlibrary",
+    "displayName": "Network Transport Library",
     "version": "1.0.0",
     "unity": "2022.2",
     "description": "Unity Network library.",
@@ -41,13 +41,14 @@ package.json の中身は下記のようにしてください
     "dependencies": {}
 }
 ```
-上記のように作成後、Unityを立ち上げると下記のようなフォルダー攻勢になっているので<br>
-Unity上で Create＞Folder でフォルダを作成し Runtimeを作ってライブラリーとして必要なスクリプトを入れてください
-Unity上で AssemblyDefinition を作り データ名はcom.ohara.networktansportlibraryとしInspectorでNameのところを Network Tansport Library としてください
+上記のように作成後、Unityを立ち上げると下記のようなフォルダ構成になっているので<br>
+Unity上で フォルダを作成し Runtimeを作ってライブラリーとして必要なスクリプトを入れてください
+Unity上で Assembly Definition を作成し、
+名前を com.ohara.networktransportlibrary に設定してください。
 下記のようなフォルダー構成にしてください
 
 ```
-Packages/Network Tansport Library/
+Packages/Network Transport Library/
 ├ package.json
 ├ Runtime/
   ├ com.ohara.networktansportlibrary.asmdef
@@ -59,19 +60,15 @@ Packages/Network Tansport Library/
 
 ---
 
-● AssemblyDefinition の役割
+● Assembly Definition
 
-- Unityに「これはパッケージです」と伝える
-- バージョン管理を行う
-- 他プロジェクトから再利用可能にする
-
-"name": "com.ohara.networktansportlibrary"", ← ohara は会社名を書くところです
+"name": "com.ohara.networktransportlibrary"", ← ohara は会社名を書くところです
 
 例）"name": "com.capcom.networktransport",
 
 # ■ 別プロジェクトでの使い方
 
-パッケージマネージャーで https://github.com/Ud128/NetworkLibrary.git?path=/Packages/com.ohara.networktansportlibrary を指定してaddする
+パッケージマネージャーで https://github.com/Ud128/NetworkLibrary.git?path=/Packages/com.ohara.networktransportlibrary を指定してaddする
 
 # ■ Unity上での利用方法
 
